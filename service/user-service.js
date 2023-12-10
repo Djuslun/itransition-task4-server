@@ -57,6 +57,15 @@ class UserService {
 
     return { ...tokens, user: userDto }
   }
+
+  async getAllUsers() {
+    try {
+      const users = await UserModel.find()
+      return users.map(user => new UserDto(user))
+    } catch (e) {
+
+    }
+  }
 }
 
 module.exports = new UserService()
