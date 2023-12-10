@@ -35,6 +35,21 @@ class UserService {
     return token
   }
 
+  async refresh(refreshToken) {
+    if (!refreshToken) {
+      throw ApiError.UnauthorizedError()
+    }
+    const userData = tokenService.validateRefreshToken(refreshToken)
+    const tokenFromDb = tokenService.findToken(refreshToken)
+    if (!userData || !tokenFromDb) {
+      throw ApiError.UnauthorizedError()
+    }
+    const user = await UserModel.findOne(userData.id)
+
+    const userDataForClient = await this.prepareUserDataForClient(user)
+    return userDataForClient
+  }
+
   async prepareUserDataForClient(user) {
     const userDto = new UserDto(user)
     const tokens = tokenService.generateToken({ ...userDto })
