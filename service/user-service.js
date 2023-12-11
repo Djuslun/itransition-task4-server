@@ -31,7 +31,7 @@ class UserService {
   }
 
   async logout(refreshToken) {
-    const token = await tokenService.removeToken(refreshToken)
+    const token = await tokenService.removeToken({ refreshToken })
     return token
   }
 
@@ -65,6 +65,11 @@ class UserService {
     } catch (e) {
 
     }
+  }
+
+  async deleteUser(userId) {
+    const deletedUser = await UserModel.findByIdAndDelete(userId)
+    return new UserDto(deletedUser)
   }
 }
 

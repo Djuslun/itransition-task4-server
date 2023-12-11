@@ -1,6 +1,7 @@
 const userService = require('../service/user-service')
 const { validationResult } = require('express-validator')
 const ApiError = require('../exceptions/api-error')
+const tokenService = require('../service/token-service')
 
 class Usercontroller {
   async registration(req, res, next) {
@@ -43,9 +44,12 @@ class Usercontroller {
 
   async delete(req, res, next) {
     try {
-
+      const deletedUser = await userService.deleteUser(req.params.userId)
+      await tokenService.removeToken({ userId: deletedUser._id })
+      res.clearCookie('refreshToken')
+      return res.json(deletedUser)
     } catch (e) {
-
+      next(e)
     }
   }
 

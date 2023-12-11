@@ -14,7 +14,7 @@ router.post('/login', usercontroller.login)
 router.post('/logout', usercontroller.logout)
 router.get('/refresh', usercontroller.refresh)
 router.get('/users', authMiddleware, usercontroller.getUsers)
-router.patch('/block', authMiddleware, usercontroller.block)
-router.delete('/delete', authMiddleware, usercontroller.delete)
+router.patch('/block/:userId', authMiddleware, usercontroller.block)
+router.delete('/delete/:userId', authMiddleware, usercontroller.delete)
 
 module.exports = router 
