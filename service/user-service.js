@@ -71,6 +71,15 @@ class UserService {
     const deletedUser = await UserModel.findByIdAndDelete(userId)
     return new UserDto(deletedUser)
   }
+
+  async updateUserStatus(userId, activeStatus) {
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { $set: { isActive: activeStatus } },
+      { new: true })
+
+    return new UserDto(updatedUser)
+  }
 }
 
 module.exports = new UserService()

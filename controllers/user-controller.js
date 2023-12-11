@@ -55,7 +55,12 @@ class Usercontroller {
 
   async block(req, res, next) {
     try {
-
+      const { activeStatus } = req.body
+      const { userId } = req.params
+      const updatedUser = await userService.updateUserStatus(userId, activeStatus)
+      await tokenService.removeToken({ userId: updatedUser._id })
+      res.clearCookie('refreshToken')
+      return res.json(updatedUser)
     } catch (e) {
       next(e)
     }
