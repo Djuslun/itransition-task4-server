@@ -9,7 +9,7 @@ module.exports = class UserDto {
     this.email = model.email
     this.id = model._id
     this.isActive = model.isActive
-    this.last_login = new Date()
+    this.last_login = model.last_login || new Date()
     this.name = model.name
   }
 }

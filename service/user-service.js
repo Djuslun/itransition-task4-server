@@ -18,14 +18,15 @@ class UserService {
   }
 
   async login(email, password) {
-    const user = await UserModel.findOne({ email })
-    if (!user) {
+    const userFromDb = await UserModel.findOne({ email })
+    if (!userFromDb) {
       throw ApiError.BadRequest(`User with email ${email} is not found`)
     }
-    const isPasswordEqual = await bcrypt.compare(password, user.password)
+    const isPasswordEqual = await bcrypt.compare(password, userFromDb.password)
     if (!isPasswordEqual) {
       throw ApiError.BadRequest(`Wrong password`)
     }
+    const user = await this.updateUserLastLogin(userFromDb._id)
     const userData = await this.prepareUserDataForClient(user)
     return userData
   }
@@ -44,7 +45,7 @@ class UserService {
     if (!userData || !tokenFromDb) {
       throw ApiError.UnauthorizedError()
     }
-    const user = await UserModel.findOne(userData.id)
+    const user = await UserModel.findById(userData.id)
 
     const userDataForClient = await this.prepareUserDataForClient(user)
     return userDataForClient
@@ -79,6 +80,14 @@ class UserService {
       { new: true })
 
     return new UserDto(updatedUser)
+  }
+
+  async updateUserLastLogin(userId) {
+    const user = await UserModel.findByIdAndUpdate(
+      userId,
+      { $set: { last_login: new Date() } },
+      { new: true })
+    return user
   }
 }
 

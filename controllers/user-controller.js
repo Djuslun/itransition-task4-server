@@ -46,7 +46,6 @@ class Usercontroller {
     try {
       const deletedUser = await userService.deleteUser(req.params.userId)
       await tokenService.removeToken({ userId: deletedUser._id })
-      res.clearCookie('refreshToken')
       return res.json(deletedUser)
     } catch (e) {
       next(e)
