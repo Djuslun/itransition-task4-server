@@ -8,6 +8,7 @@ class UserService {
   async registration(email, password, name) {
     const candidate = await UserModel.findOne({ email })
     if (candidate) {
+      console.log(candidate)
       throw ApiError.BadRequest(`User with email ${email} exist already`)
     }
 
@@ -21,6 +22,9 @@ class UserService {
     const userFromDb = await UserModel.findOne({ email })
     if (!userFromDb) {
       throw ApiError.BadRequest(`User with email ${email} is not found`)
+    }
+    if (!userFromDb.isActive) {
+      throw ApiError.Forbidden()
     }
     const isPasswordEqual = await bcrypt.compare(password, userFromDb.password)
     if (!isPasswordEqual) {
@@ -68,14 +72,15 @@ class UserService {
     }
   }
 
-  async deleteUser(userId) {
-    const deletedUser = await UserModel.findByIdAndDelete(userId)
-    return new UserDto(deletedUser)
+  async deleteUsers(userIds) {
+    const deletedUser = await UserModel.deleteMany({ _id: { $in: userIds } })
+    console.log(deletedUser)
+    return deletedUser
   }
 
-  async updateUserStatus(userId, activeStatus) {
-    const updatedUser = await UserModel.findByIdAndUpdate(
-      userId,
+  async updateUserStatus(userIds, activeStatus) {
+    const updatedUser = await UserModel.updateMany(
+      { _id: { $in: userIds } },
       { $set: { isActive: activeStatus } },
       { new: true })
 

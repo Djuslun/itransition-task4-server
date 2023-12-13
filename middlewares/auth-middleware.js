@@ -16,6 +16,9 @@ module.exports = function (req, res, next) {
     if (!userData) {
       return next(ApiError.UnauthorizedError())
     }
+    if (!userData.isActive) {
+      return next(ApiError.Forbidden())
+    }
     req.user = userData
     next()
   } catch (e) {

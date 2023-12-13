@@ -24,6 +24,11 @@ class TokenService {
     return tokenData
   }
 
+  async removeTokenByUserIds(userIds) {
+    const tokenData = tokenModel.deleteMany({ user: { $in: userIds } })
+    return tokenData
+  }
+
   async findToken(refreshToken) {
     const tokenData = tokenModel.findOne({ refreshToken })
     return tokenData

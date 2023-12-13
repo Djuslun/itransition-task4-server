@@ -44,21 +44,19 @@ class Usercontroller {
 
   async delete(req, res, next) {
     try {
-      const deletedUser = await userService.deleteUser(req.params.userId)
-      await tokenService.removeToken({ userId: deletedUser._id })
-      return res.json(deletedUser)
+      const deletedUsers = await userService.deleteUsers(req.body)
+      await tokenService.removeTokenByUserIds(req.body)
+      return res.json(deletedUsers)
     } catch (e) {
       next(e)
     }
   }
 
-  async block(req, res, next) {
+  async updateUserStatus(req, res, next) {
     try {
-      const { activeStatus } = req.body
-      const { userId } = req.params
-      const updatedUser = await userService.updateUserStatus(userId, activeStatus)
-      await tokenService.removeToken({ userId: updatedUser._id })
-      res.clearCookie('refreshToken')
+      const { activeStatus, userIds } = req.body
+      const updatedUser = await userService.updateUserStatus(userIds, activeStatus)
+      await tokenService.removeTokenByUserIds(userIds)
       return res.json(updatedUser)
     } catch (e) {
       next(e)
